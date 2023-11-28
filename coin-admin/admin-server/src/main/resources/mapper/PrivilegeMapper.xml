@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="camellia.mapper.PrivilegeMapper">
+    <select id="listAll" resultType="camellia.domain.Privilege">
+        select * from sys_privilege
+    </select>
+    <insert id="addPrivilege" parameterType="camellia.domain.Privilege">
+        insert into sys_privilege (name, description, url, method, create_by,modify_by)
+         values (#{name}, #{description},#{url}, #{method}, #{createBy}, #{modifyBy})
+    </insert>
+    <delete id="deletePrivilege" parameterType="java.lang.Long">
+        delete from sys_privilege where id = #{pid}
+    </delete>
+    <select id="getPermissions" parameterType="java.lang.Long" resultType="java.lang.String">
+        select name from sys_privilege left join sys_role_privilege on sys_privilege.id = sys_role_privilege.privilege_id
+        where sys_role_privilege.role_id in (select role_id from sys_user_role where user_id = #{uid})
+    </select>
+</mapper>

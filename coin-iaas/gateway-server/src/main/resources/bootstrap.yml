@@ -1,0 +1,46 @@
+server:
+  port: 8082
+spring:
+  redis:
+    host: localhost
+    port: 6379
+  application:
+    name: gateway-server
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        group: DEFAULT_GROUP
+        enabled: true
+        refresh-enabled: true
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: admin-service_router
+          uri: lb://admin-service
+          predicates:
+            - Path=/admin/**
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        port: 8719
+      datasource:
+        ds1.nacos:
+          serverAddr: localhost:8848
+          dataId: gw-flow
+          ruleType: gw_flow
+        ds2.nacos:
+          serverAddr: localhost:8848
+          dataId: gw-api
+          ruleType: gw_api_group
+#        ds1.file:
+#          file: classpath:gw-flow.json
+#          ruleType: gw_flow
+#        ds2.file:
+#          file: classpath:gw-api.json
+#          ruleType: gw_api_group

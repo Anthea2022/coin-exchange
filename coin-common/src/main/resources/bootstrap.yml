@@ -1,0 +1,37 @@
+server:
+  port: 8084
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: sxn700320
+    url: jdbc:mysql://localhost:3306/coin-exchange?useSSL=false&serverTimezon=GMT%28
+  application:
+    name: coin-common
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+  redis:
+    host: localhost
+    port: 6379
+swagger2:
+  basePackage: camellia.controller
+  name: anthea
+  url: https://gitee.com/Always_with_me
+  email: striveandyou@163.com
+  title: coin-common
+  description: coin-common模块测试开发
+  version: 1.0
+  termsOfServiceUrl: no
+swagger:
+  basic:
+    enable: true
+    username: admin
+    password: admin
+logging:
+  level:
+    web: debug
+    camellia.swaager: debug

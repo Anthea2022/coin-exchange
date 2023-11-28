@@ -1,0 +1,22 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: sxn700320
+    url: jdbc:mysql://localhost:3306/coin-exchange?useSSL=false&serverTimezon=GMT%28
+  application:
+    name: author-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+logging:
+  level:
+    camellia.mapper: debug
+    org.springframework.web: debug

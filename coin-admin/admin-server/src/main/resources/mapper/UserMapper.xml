@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="camellia.mapper.UserMapper">
+    <select id="queryById" parameterType="java.lang.Long" resultType="camellia.domain.User">
+        select id,username, status from sys_user where id = #{id}
+    </select>
+    <insert id="addUserRole" parameterType="java.lang.Long">
+        insert into sys_user_role (user_id, role_id) values (#{uid}, #{rid})
+    </insert>
+    <select id="getAllId" resultType="java.lang.Long">
+        select id from sys_user
+    </select>
+    <select id="getUserRole" parameterType="java.lang.Long" resultType="camellia.domain.VO.RoleVo">
+        select sys_user_role.id, sys_role.name from sys_user_role
+            left join sys_role on sys_role.id=sys_user_role.role_id where sys_user_role.user_id = #{uid}
+    </select>
+    <delete id="deleteUserRole" parameterType="java.lang.Long">
+        delete from sys_user_role where id = #{id}
+    </delete>
+    <select id="queryUserRoleByRid" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select id from sys_user_role where role_id = #{rid}
+    </select>
+</mapper>
