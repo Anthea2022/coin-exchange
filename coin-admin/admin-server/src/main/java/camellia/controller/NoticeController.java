@@ -23,13 +23,13 @@ import java.util.Date;
  */
 @Api(tags = "通知公告")
 @RestController
-@RequestMapping("/admin/notice")
+@RequestMapping("/notice")
 public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
     @ApiOperation("发布通知公告")
-    @PreAuthorize("@coin.hasPermission('notice_insert')")
+//    @PreAuthorize("@coin.hasPermission('notice_insert')")
     @PostMapping("/save")
     public BaseResponse<Object> addNotice(@RequestBody Notice notice) {
         if (BooleanUtils.isTrue(noticeService.isRepeated(notice))) {

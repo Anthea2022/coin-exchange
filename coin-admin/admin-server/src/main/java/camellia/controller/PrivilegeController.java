@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
  * @author 墨染盛夏
  * @version 2023/11/21 0:10
  */
-@RequestMapping("/admin/privilege")
+@RequestMapping("/privilege")
 @RestController
 public class PrivilegeController {
     @Autowired

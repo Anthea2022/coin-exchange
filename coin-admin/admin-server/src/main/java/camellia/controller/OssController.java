@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 @Api(tags = "oss对象存储存储文件")
 @RestController
-@RequestMapping("/admin/oss")
+@RequestMapping("/oss")
 public class OssController {
     @Autowired
     private OSS ossClient;

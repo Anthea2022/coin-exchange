@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
  * @version 2023/11/26 13:26
  */
 @RestController
-@RequestMapping("/admin/user")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;

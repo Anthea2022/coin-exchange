@@ -10,26 +10,29 @@ import java.util.Date;
 
 /**
  * @author 墨染盛夏
- * @version 2023/11/28 0:06
+ * @version 2023/11/28 20:50
  */
 @Data
-@Table(name = "notice")
+@Table(name = "work_issue")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notice {
+public class WorkIssue {
     private Long id;
 
-    private String title;
+    @Column(name = "user_id")
+    private Long uid;
 
-    private String description;
+    @Column(name = "answer_user_id")
+    private Long answerUid;
 
-    private String author;
+    @Column(name = "answer_name")
+    private String answerName;
+
+    private String question;
+
+    private String answer;
 
     private Integer status;
-
-    private Integer sort;
-
-    private String content;
 
     @Column(name = "created")
     private Date createTime;

@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Api(tags = "用户日志接口")
 @RestController
-@RequestMapping("/admin/userLog")
+@RequestMapping("/userLog")
 public class UserLogController {
     @Autowired
     private UserLogService userLogService;

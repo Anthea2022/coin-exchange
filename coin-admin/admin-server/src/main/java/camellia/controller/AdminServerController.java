@@ -5,22 +5,16 @@ import camellia.common.ResponseCodes;
 import camellia.domain.LoginResult;
 import camellia.feign.JwtToken;
 import camellia.feign.Oauth2FeignClient;
-import camellia.service.UserService;
-import camellia.util.TokenUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +33,6 @@ import static camellia.constant.LoginConstant.*;
  * @date 2023/10/24 15:09
  */
 @RestController
-@RequestMapping("/admin")
 @Api(tags = "admin测试接口")
 public class AdminServerController {
 
