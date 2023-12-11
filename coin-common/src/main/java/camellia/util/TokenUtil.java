@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class TokenUtil {
     public static Long getUid() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? null : Long.valueOf(authentication.getPrincipal().toString());
+        System.out.println(authentication);
+        return Long.valueOf(authentication.getPrincipal().toString());
     }
 }

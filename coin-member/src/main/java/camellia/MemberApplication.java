@@ -3,15 +3,17 @@ package camellia;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
- * @author anthea
- * @date 2023/10/29 13:12
+ * @author 墨染盛夏
+ * @version 2023/11/29 10:58
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-public class CoinCommonApplication {
+@EnableFeignClients
+public class MemberApplication {
     public static void main(String[] args) {
-        SpringApplication.run(CoinCommonApplication.class, args);
+        SpringApplication.run(MemberApplication.class, args);
     }
 }

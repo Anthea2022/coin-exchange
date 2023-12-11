@@ -55,7 +55,7 @@ public class WebAspect {
             String url = request.getRequestURI().toString();
             webLog.setUri(request.getRequestURI());
             webLog.setBasePath(StrUtil.removeSuffix(url, URLUtil.url(url).getPath()));
-            webLog.setUrl(authentication ==null ? "anonymous" : authentication.getPrincipal().toString());
+            webLog.setUrl(authentication == null ? "anonymous" : authentication.getPrincipal().toString());
             webLog.setIp(request.getRemoteAddr());
             //
             MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();

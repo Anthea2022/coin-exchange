@@ -21,10 +21,14 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: admin-service_router
+        - id: admin-service-router
           uri: lb://admin-service
           predicates:
             - Path=/admin/**
+        - id: member-server-router
+          uri: lb://member-server
+          predicates:
+            - Path=/user/**
     sentinel:
       transport:
         dashboard: localhost:8080

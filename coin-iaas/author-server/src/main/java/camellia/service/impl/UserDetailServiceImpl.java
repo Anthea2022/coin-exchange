@@ -1,7 +1,10 @@
 package camellia.service.impl;
 
+import camellia.domain.Member;
+import camellia.mapper.MemberMapper;
 import camellia.mapper.PermissionMapper;
 import camellia.mapper.UserMapper;
+import com.gitee.fastmybatis.core.query.Query;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,6 +36,9 @@ import static camellia.constant.UserLoginConstant.*;
 public class UserDetailServiceImpl implements UserDetailsService {
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private MemberMapper memberMapper;
 
     @Resource
     private PermissionMapper permissionMapper;
@@ -71,22 +77,22 @@ public class UserDetailServiceImpl implements UserDetailsService {
             return userMapper.getUsername(Long.parseLong(username));
         }
         if (USER_TYPE.equals(loginType)) {
-            return userMapper.getEmail(Long.parseLong(username));
+            return memberMapper.getColumnValue("email", new Query().eq("id", Long.parseLong(username)), String.class);
         }
         return username;
     }
 
     private UserDetails loadUser(String username) {
         // 查询用户、角色、权限
-        camellia.domain.User user = userMapper.getByEmail(username);
-        if (ObjectUtils.isEmpty(user)) {
+        Member member = memberMapper.getByQuery(new Query().eq("email", username));
+        if (ObjectUtils.isEmpty(member)) {
             return null;
         }
-        Long id = user.getId();
+        Long id = member.getId();
         return new User(
                 id.toString(),
-                user.getPassword(),
-                user.isStatus(),
+                member.getPassword(),
+                member.getStatus(),
                 true,
                 true,
                 true,

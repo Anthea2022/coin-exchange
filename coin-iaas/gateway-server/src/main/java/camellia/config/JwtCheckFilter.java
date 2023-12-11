@@ -29,7 +29,7 @@ public class JwtCheckFilter implements GlobalFilter, Ordered {
     @Autowired
     StringRedisTemplate redisTemplate;
 
-    @Value("${no.token.urls:/admin/login}")
+    @Value("${no.token.urls:/admin/login,/user/login}")
     private Set<String> noRequestTokenURls;
 
     @Override
@@ -48,7 +48,6 @@ public class JwtCheckFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
         return chain.filter(exchange);
-//        return buildNoAuthorizationResult(exchange);
     }
 
     // 没有token的响应

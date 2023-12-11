@@ -35,11 +35,6 @@
         </dependency>
         <dependency>
             <groupId>camellia</groupId>
-            <artifactId>admin-api</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>camellia</groupId>
             <artifactId>coin-common</artifactId>
             <version>0.0.1</version>
         </dependency>
