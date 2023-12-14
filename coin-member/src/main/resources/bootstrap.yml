@@ -8,5 +8,16 @@ spring:
       config:
         server-addr: localhost:8848
         file-extension: yaml
+    alicloud:
+      # 阿里云访问密钥
+      access-key: LTAI5tFTBhVEuvCcphwP6FXQ
+      secret-key: InuOizjvPijKZZFNGFZw6141owsc4l
+      sms:
+        #这个是在阿里云短信服务->通用设置里开启->状态报告接收->返回的队列名称
+        report-queue-name:
+        #这个是在阿里云短信服务->通用设置里开启->上行消息接收->返回的队列名称
+        up-queue-name:
   profiles:
     active: dev
+file:
+  path: D://bailan//

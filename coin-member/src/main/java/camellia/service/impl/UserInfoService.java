@@ -39,24 +39,10 @@ public class UserInfoService extends BaseService<UserInfo, Long, UserInfoMapper>
         return userInfoMapper.updateIgnoreNull(userInfo) > 0;
     }
 
-
-    public UserAuthInfoVo getUserAuthInfo(Long uid) {
-        UserAuthInfoVo userAuthInfoVo = null;
-        List<UserAuthInfo> userAuthInfos = null;
-        List<UserAuthAuditRecord> userAuthAuditRecords = null;
-        UserInfo userInfo = userInfoMapper.getBySpecifiedColumns(USER_INFO, new Query().eq("id", uid));
-
-        if (ObjectUtils.isEmpty(userInfo)) {
-            return userAuthInfoVo;
+    public Boolean setReviewStatus(UserInfo userInfo) {
+        if (ObjectUtils.isEmpty(userInfoMapper.getColumnValue("id", new Query().eq("id", userInfo.getId()), Long.class))) {
+            return false;
         }
-        if (userInfo.getReviewsStatus() == null || userInfo.getReviewsStatus() == 0) {
-            userAuthInfoVo = new UserAuthInfoVo(userInfo, null, null);
-            return userAuthInfoVo;
-        }
-        userAuthInfos = userAuthInfoMapper.list(new Query().eq("user_id", uid));
-        UserAuthInfo userAuthInfo = userAuthInfos.get(0);
-        UserAuthAuditRecord userAuthAuditRecord = userAuthAuditRecordMapper.getByQuery(new Query().eq("auth_code", userAuthInfo.getAuthCode()));
-        userAuthInfoVo = new UserAuthInfoVo(userInfo, userAuthInfo, userAuthAuditRecord);
-        return userAuthInfoVo;
+        return userInfoMapper.updateIgnoreNull(userInfo) > 0;
     }
 }

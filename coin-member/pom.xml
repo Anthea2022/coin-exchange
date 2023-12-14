@@ -23,6 +23,10 @@
             <artifactId>coin-common</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alicloud-sms</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

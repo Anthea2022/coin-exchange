@@ -19,7 +19,7 @@ import java.util.List;
 public class UserAuthInfoVo {
     private UserInfo userInfo;
 
-    private UserAuthInfo userAuthInfos;
+    private List<UserAuthInfo> userAuthInfos;
 
-    private UserAuthAuditRecord userAuthAuditRecords;
+    private List<UserAuthAuditRecord> userAuthAuditRecords;
 }

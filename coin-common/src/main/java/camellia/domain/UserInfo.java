@@ -175,7 +175,7 @@ public class UserInfo {
      */
     @Column(name = "reviews_status")
     @ApiModelProperty(value="审核状态,1通过,2拒绝,0,待审核")
-    private Integer reviewsStatus;
+    private Byte reviewsStatus;
 
     /**
      * 代理商拒绝原因

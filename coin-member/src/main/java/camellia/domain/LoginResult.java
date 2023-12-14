@@ -20,6 +20,7 @@ public class LoginResult {
      */
     private String token;
 
+    // todo 普通用户需要配权限吗？
     /**
      * 权限
      */

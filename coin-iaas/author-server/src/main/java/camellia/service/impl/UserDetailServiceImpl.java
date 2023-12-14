@@ -21,6 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.annotation.Resource;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -77,14 +78,14 @@ public class UserDetailServiceImpl implements UserDetailsService {
             return userMapper.getUsername(Long.parseLong(username));
         }
         if (USER_TYPE.equals(loginType)) {
-            return memberMapper.getColumnValue("email", new Query().eq("id", Long.parseLong(username)), String.class);
+            return memberMapper.getEmailById(Long.parseLong(username));
         }
         return username;
     }
 
     private UserDetails loadUser(String username) {
         // 查询用户、角色、权限
-        Member member = memberMapper.getByQuery(new Query().eq("email", username));
+        Member member = memberMapper.getLoginInfo(username);
         if (ObjectUtils.isEmpty(member)) {
             return null;
         }
@@ -92,7 +93,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return new User(
                 id.toString(),
                 member.getPassword(),
-                member.getStatus(),
+                member.getStatus() == 1,
                 true,
                 true,
                 true,

@@ -25,22 +25,21 @@ import org.springframework.util.FileCopyUtils;
 @Order(2)
 @EnableResourceServer
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-    private final static String[] matchers = {"/admin/login", "/user/login"};
+    private final static String[] matchers = {"/admin/login", "/user/login", "/admin/verify_code/get", "/admin/verify_code/check",
+    "/user/verify_code/get", "/user/verify_code/check"};
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf()
+                .disable()
                 .sessionManagement().disable()
+                .requestMatchers().antMatchers(matchers)
+                .and()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/wabjars/**").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/v2/**").permitAll()
-                .antMatchers(matchers)
-                .authenticated()
-                .anyRequest().authenticated()
+                .antMatchers(matchers).permitAll()
+                .antMatchers("/**").authenticated()
                 .and().headers().cacheControl();
     }
 
