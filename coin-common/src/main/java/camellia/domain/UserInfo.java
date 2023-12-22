@@ -49,7 +49,7 @@ public class UserInfo {
      */
     @ApiModelProperty(value="手机号")
     @NotBlank
-    private String mobile;
+    private String phone;
 
     /**
      * 密码

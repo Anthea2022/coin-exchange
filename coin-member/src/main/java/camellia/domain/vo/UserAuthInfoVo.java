@@ -21,5 +21,5 @@ public class UserAuthInfoVo {
 
     private List<UserAuthInfo> userAuthInfos;
 
-    private List<UserAuthAuditRecord> userAuthAuditRecords;
+    private UserAuthAuditRecord userAuthAuditRecords;
 }

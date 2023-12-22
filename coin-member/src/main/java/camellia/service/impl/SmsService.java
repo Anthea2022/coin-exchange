@@ -1,5 +1,7 @@
 package camellia.service.impl;
 
+import camellia.mapper.UserInfoMapper;
+import camellia.util.TokenUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.alicloud.sms.ISmsService;
 import com.aliyuncs.dysmsapi.model.v20170525.SendBatchSmsRequest;
@@ -7,12 +9,17 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
+import com.gitee.fastmybatis.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static camellia.constant.CodeTypeConstant.OLD_PHONE_CODE;
+import static camellia.constant.CodeTypeConstant.UPDATE_PSW_CODE;
 
 /**
  * @author 墨染盛夏
@@ -24,18 +31,16 @@ public class SmsService {
     private ISmsService iSmsService;
 
     @Autowired
+    private UserInfoMapper userInfoMapper;
+
+    @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
     // 单发短信
     public Boolean sendMsg(String phone) {
-        SendSmsRequest request = new SendSmsRequest();
-        request.setPhoneNumbers(phone);
-        request.setSignName("");
-        // 模板
-        request.setTemplateCode("");
-        String code = RandomUtil.randomNumbers(6);
-        request.setTemplateParam("验证码为：" + code);
         try {
+            String code = RandomUtil.randomNumbers(6);
+            SendSmsRequest request = buildMySmsRequest(phone, code);
             iSmsService.sendSmsRequest(request);
             stringRedisTemplate.opsForValue().set("code" + phone, code, 5, TimeUnit.MINUTES);
             return true;
@@ -45,12 +50,50 @@ public class SmsService {
         }
     }
 
+    public Boolean sendMsg() {
+        String phone = getMyPhone();
+        if (StringUtils.isEmpty(phone)) {
+            return false;
+        }
+        return sendMsg(phone);
+    }
+
+    private SendSmsRequest buildMySmsRequest(String phone, String code) {
+        SendSmsRequest request = new SendSmsRequest();
+        request.setPhoneNumbers(phone);
+        // 签名
+        request.setSignName("");
+        // 模板
+        request.setTemplateCode("");
+        request.setTemplateParam("验证码为：" + code);
+        return request;
+    }
+
     public Boolean checkCode(String phone, String code) {
         if (!stringRedisTemplate.hasKey("code" + phone)) {
             return false;
         }
         String codeInRedis = stringRedisTemplate.opsForValue().get("code" + phone);
         return codeInRedis.equals(code);
+    }
+
+    /**
+     * 验证旧手机号码的验证码
+     * @param code
+     * @return
+     */
+    public Boolean checkOldCode(String code) {
+        String phone = getMyPhone();
+        if (StringUtils.isEmpty(phone)) {
+            return false;
+        }
+        return checkCode(phone, code);
+    }
+
+    private String getMyPhone() {
+        Long uid = TokenUtil.getUid();
+        String phone = userInfoMapper.getColumnValue("phone", new Query().eq("id", uid), String.class);
+        return phone;
     }
 
     // 批量发送短信
