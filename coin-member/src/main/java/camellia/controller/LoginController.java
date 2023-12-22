@@ -89,9 +89,9 @@ public class LoginController {
             authorityList = authorities.stream()
                     .map(authorityJson -> new SimpleGrantedAuthority(authorityJson.toString()))
                     .collect(Collectors.toList());
-            for (SimpleGrantedAuthority simpleGrantedAuthority : authorityList) {
-                System.out.println(simpleGrantedAuthority.getAuthority());
-            }
+//            for (SimpleGrantedAuthority simpleGrantedAuthority : authorityList) {
+//                System.out.println(simpleGrantedAuthority.getAuthority());
+//            }
         }
         stringRedisTemplate.opsForValue().set(accessToken, "", jwtToken.getExpiresIn(), TimeUnit.SECONDS);
         return BaseResponse.success(new LoginResult(accessToken, authorityList));

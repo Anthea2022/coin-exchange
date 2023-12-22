@@ -63,6 +63,7 @@ public class RoleController {
         role.setId(rid);
         role.setStatus(0);
         roleService.deleteRole(role);
+        // TODO: 2023/12/22 删除角色时删除角色拥有的权限 
         return BaseResponse.success();
     }
 

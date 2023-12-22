@@ -9,6 +9,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author 墨染盛夏
  * @version 2023/12/2 10:52
@@ -38,5 +41,14 @@ public class UserBankService extends BaseService<UserBank, Long, UserBankMapper>
             return false;
         }
         return userBankMapper.updateIgnoreNull(userBank) > 0;
+    }
+
+    public List<UserBank> listBank() {
+        Long uid = TokenUtil.getUid();
+        return userBankMapper.listBySpecifiedColumns(Arrays.asList("id", "remark", "bank_card", "status"), new Query().eq("user_id", uid));
+    }
+
+    public UserBank getDetail(Long bankId) {
+        return userBankMapper.getBySpecifiedColumns(Arrays.asList("bank_prov", "bank_city", "bank_addr"), new Query().eq("id", bankId));
     }
 }

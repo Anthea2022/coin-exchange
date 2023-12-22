@@ -1,9 +1,11 @@
 package camellia.service;
 
+import camellia.common.ResponseCodes;
 import camellia.domain.Role;
 import camellia.domain.User;
 import camellia.domain.VO.RoleVo;
 import camellia.domain.VO.UserRoleVo;
+import camellia.exception.AccountException;
 import camellia.mapper.RoleMapper;
 import camellia.mapper.UserMapper;
 import com.gitee.fastmybatis.core.PageInfo;
@@ -50,17 +52,17 @@ public class UserService extends BaseService<User, Long, UserMapper> {
     public Boolean addUserRole(Long uid, Long rid) {
         User user = userMapper.queryById(uid);
         if (ObjectUtils.isEmpty(user)) {
-            return false;
+            throw new AccountException(ResponseCodes.FAIL, "无此用户");
         }
         if (user.getStatus().equals(0)) {
-            return false;
+            throw new AccountException(ResponseCodes.FAIL, "用户状态错误");
         }
         Role role = roleMapper.getById(rid);
         if (ObjectUtils.isEmpty(role)) {
-            return false;
+            throw new AccountException(ResponseCodes.FAIL, "无此角色");
         }
         if (role.getStatus().equals(0)) {
-            return false;
+            throw new AccountException(ResponseCodes.FAIL, "角色状态错误");
         }
         return userMapper.addUserRole(uid, rid) > 0;
     }

@@ -1,10 +1,12 @@
 package camellia.domain;
 
+import camellia.domain.vo.SeniorAuthImgVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author 墨染盛夏
@@ -16,21 +18,6 @@ import javax.validation.constraints.NotBlank;
 public class SeniorAuth {
     private Long uid;
 
-    /**
-     *身份证正面照；2-身份证反面照；3-手持身份证照片；
-     */
-    @NotBlank
-    private String imageUrl1;
-
-    /**
-     *身份证正面照；2-身份证反面照；3-手持身份证照片；
-     */
-    @NotBlank
-    private String imageUrl2;
-
-    /**
-     *身份证正面照；2-身份证反面照；3-手持身份证照片；
-     */
-    @NotBlank
-    private String imageUrl3;
+    // 身份证的图片集合
+    private List<SeniorAuthImgVo> seniorAuthImgs;
 }

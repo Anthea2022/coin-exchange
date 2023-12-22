@@ -10,10 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
@@ -27,6 +24,10 @@ import javax.validation.constraints.NotNull;
 public class UserBankController {
     @Autowired
     private UserBankService userBankService;
+
+    /*
+    用户个人管理银行卡
+     */
 
     @ApiOperation("添加银行卡")
     @PostMapping("/save")
@@ -59,5 +60,17 @@ public class UserBankController {
             return BaseResponse.success("禁用/启用银行卡成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "禁用/银行卡失败");
+    }
+
+    @ApiOperation("查看本人银行卡")
+    @GetMapping("/list")
+    public BaseResponse<Object> listBank() {
+        return BaseResponse.success(userBankService.listBank());
+    }
+
+    @ApiOperation("查看银行卡的具体信息")
+    @GetMapping("/detail")
+    public BaseResponse<Object> getBankDetail(@NotNull Long bankId) {
+        return BaseResponse.success(userBankService.getDetail(bankId));
     }
 }

@@ -1,6 +1,9 @@
 package camellia.service.impl;
 
+import camellia.common.ResponseCodes;
 import camellia.domain.UserAuthInfo;
+import camellia.domain.vo.SeniorAuthImgVo;
+import camellia.exception.BusinessException;
 import camellia.mapper.UserAuthInfoMapper;
 import camellia.util.ImgUtil;
 import com.gitee.fastmybatis.core.query.Query;
@@ -11,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 墨染盛夏
@@ -35,5 +39,22 @@ public class UserAuthInfoService extends BaseService<UserAuthInfo, Long, UserAut
         userAuthInfo.setAuthCode(authCode);
         userAuthInfoMapper.saveIgnoreNull(userAuthInfo);
         return true;
+    }
+
+    /**
+     * 获取最新的高级认证authCode
+     * @param uid
+     * @return
+     */
+    public String getLatestAuthCode(Long uid) {
+        String authCode = userAuthInfoMapper.getColumnValue("auth_code", new Query().eq("user_id", uid), String.class);
+        if (StringUtils.isEmpty(authCode)) {
+            throw new BusinessException(ResponseCodes.QUERY_NULL_ERROR, "请先进行高级认证");
+        }
+        return authCode;
+    }
+
+    public List<SeniorAuthImgVo>  getLatestSeniorAuthImg(Long uid) {
+        return userAuthInfoMapper.listBySpecifiedColumns()
     }
 }

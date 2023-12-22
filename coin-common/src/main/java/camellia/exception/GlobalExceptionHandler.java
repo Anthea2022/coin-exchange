@@ -53,4 +53,14 @@ public class GlobalExceptionHandler {
     public BaseResponse<Object> handleAccessDeniedException(AccessDeniedException exception) {
         return BaseResponse.fail(ResponseCodes.NO_AUTH, "没有权限执行操作");
     }
+
+    @ExceptionHandler(value = AccountException.class)
+    public BaseResponse<Object> handleAccountException(AccountException exception) {
+        return BaseResponse.fail(exception.getResponseCodes(), exception.getMsg());
+    }
+
+    @ExceptionHandler(value = BusinessException.class)
+    public BaseResponse<Object> handleBusinessException(BusinessException exception) {
+        return BaseResponse.fail(exception.getResponseCodes(), exception.getMsg());
+    }
 }

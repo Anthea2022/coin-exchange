@@ -1,6 +1,8 @@
 package camellia.service.impl;
 
+import camellia.common.ResponseCodes;
 import camellia.domain.UserInfo;
+import camellia.exception.BusinessException;
 import camellia.mapper.UserInfoMapper;
 import camellia.util.TokenUtil;
 import com.gitee.fastmybatis.core.query.Query;
@@ -43,7 +45,7 @@ public class UserInfoService extends BaseService<UserInfo, Long, UserInfoMapper>
             userInfo.setPaypassword(newPayPsw);
             return userInfoMapper.updateIgnoreNull(userInfo) > 0;
         }
-        return false;
+        throw new BusinessException(ResponseCodes.FAIL, "原始密码错误");
     }
 
     private Boolean isSame(String code) {

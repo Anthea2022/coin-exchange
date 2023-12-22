@@ -3,6 +3,7 @@ package camellia.controller;
 import camellia.common.BaseResponse;
 import camellia.common.ResponseCodes;
 import camellia.domain.User;
+import camellia.feign.MemberFeign;
 import camellia.service.UserService;
 import com.gitee.fastmybatis.core.query.Query;
 import io.swagger.annotations.ApiImplicitParam;
@@ -25,6 +26,9 @@ import javax.validation.constraints.NotNull;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MemberFeign memberFeign;
 
     @ApiOperation("给与用户角色")
     @PostMapping("/role/grant")
@@ -75,9 +79,36 @@ public class UserController {
     @PostMapping("/delete")
     @PreAuthorize("@coin.hasPermission('sys_user_delete')")
     public BaseResponse<Object> deleteUser(Long uid) {
+
+        // TODO: 2023/12/22 删除用户是删除sys_user_role的记录 
         if (BooleanUtils.isTrue(userService.deleteUser(uid))) {
             return BaseResponse.success("删除用户成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "删除用户失败");
+    }
+
+    @ApiOperation("查看用户的基本信息")
+    @GetMapping("/info/list")
+    public BaseResponse<Object> listBasicInfo(@NotNull Integer pageSize, @NotNull Integer pageNum, Integer reviewStatus,
+                                              String name, String realName, String phone, String email) {
+        return memberFeign.listBasicInfo(pageSize, pageNum, reviewStatus, name, realName, phone, email);
+    }
+
+    @ApiOperation("查看用户的高级认证")
+    @GetMapping("/senior/auth/get")
+    public BaseResponse<Object> getSeniorAuth(@NotNull Long uid, @NotNull Byte reviewStatus) {
+        return memberFeign.getInfoDetail(uid, reviewStatus);
+    }
+
+    @ApiOperation("审核用户高级认证")
+    @PostMapping("/senior/auth/check")
+    public BaseResponse<Object> checkUserSeniorAuth(@NotNull Long authCode, @NotNull Byte status, String remark) {
+        return memberFeign.updateReviewStatus(authCode, status, remark);
+    }
+
+    @ApiOperation("设置用户状态")
+    @PostMapping("/status/set")
+    public BaseResponse<Object> setUserStatus(@NotNull Long uid, @NotNull Byte status) {
+        return memberFeign.setStatus(uid, status);
     }
 }

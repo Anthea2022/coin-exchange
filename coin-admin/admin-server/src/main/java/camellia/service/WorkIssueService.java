@@ -1,6 +1,8 @@
 package camellia.service;
 
+import camellia.common.ResponseCodes;
 import camellia.domain.WorkIssue;
+import camellia.exception.BusinessException;
 import camellia.mapper.UserMapper;
 import camellia.mapper.WorkIssueMapper;
 import camellia.util.TokenUtil;
@@ -36,7 +38,7 @@ public class WorkIssueService extends BaseService<WorkIssue, Long, WorkIssueMapp
         workIssue.setAnswerUid(uid);
         workIssue.setAnswerName(userMapper.getColumnValue("username", new Query().eq("id",uid), String.class));
         if (workIssueMapper.getColumnValue("status", new Query().eq("id", workIssue.getId()), Integer.class).equals(0)) {
-            return false;
+            throw new BusinessException(ResponseCodes.FAIL, "工单状态错误");
         }
         return workIssueMapper.updateIgnoreNull(workIssue) > 0;
     }

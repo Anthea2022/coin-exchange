@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @version 2023/11/30 20:31
  */
 @FeignClient(value = "author-server")
-public interface Oauth2FeignClient {
+public interface AuthorMemberLoginFeign {
     @PostMapping("/oauth/token")
     ResponseEntity<JwtToken> login(
             @RequestParam("grant_type") String grantType,
