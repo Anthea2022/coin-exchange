@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
 
-import static camellia.constant.CodeTypeConstant.PHONE_VERIFY_CODE;
 
 /**
  * @author 墨染盛夏
@@ -34,15 +33,28 @@ public class SmsController {
         return BaseResponse.fail(ResponseCodes.FAIL, "发送失败");
     }
 
-    @ApiOperation("/给旧手机发送验证码")
-    @PostMapping("/old/phone/verify_code/send")
-    public BaseResponse<Object> sendOldPhoneVerifyCode() {
+    @ApiOperation("用户本人手机发送验证码")
+    @PostMapping("/my_phone/verify_code/send")
+    public BaseResponse<Object> sendMyPhoneVerifyCode() {
         if (BooleanUtils.isTrue(smsService.sendMsg())) {
             return BaseResponse.success("发送成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "发送失败");
     }
 
+    @ApiOperation("邮箱发送验证码")
+    @PostMapping("/email/verify_code/send")
+    public BaseResponse<Object> sendEmailVerifyCode(String email) {
+        smsService.sendEmail(email);
+        return BaseResponse.success("发送成功");
+    }
+
+    @ApiOperation("用户本人邮箱发送验证码")
+    @PostMapping("/email/verify_code/send")
+    public BaseResponse<Object> sendMyEmailVerifyCode(String email) {
+        smsService.sendEmail(email);
+        return BaseResponse.success("发送成功");
+    }
 
 //    @ApiOperation("验证绑定手机号验证码")
 //    @PostMapping("/phone/verify_code/check")

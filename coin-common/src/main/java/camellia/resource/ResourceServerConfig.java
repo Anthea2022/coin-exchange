@@ -6,9 +6,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -28,7 +25,7 @@ import org.springframework.util.FileCopyUtils;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private final static String[] matchers = {"/admin/login", "/user/login", "/admin/verify_code/get", "/admin/verify_code/check",
-    "/user/verify_code/get", "/user/verify_code/check"};
+    "/user/verify_code/get", "/user/verify_code/check", "/user/phone/verify_code/send", "/user/register/phone", "/user/register/email"};
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

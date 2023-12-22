@@ -4,13 +4,19 @@ import camellia.common.BaseResponse;
 import camellia.common.ResponseCodes;
 import camellia.domain.JwtToken;
 import camellia.domain.LoginResult;
-import camellia.service.Oauth2FeignClient;
+import camellia.domain.UserInfo;
+import camellia.domain.param.RegisterParam;
+import camellia.service.AuthorMemberLoginFeign;
+import camellia.service.impl.SmsService;
+import camellia.service.impl.UserInfoService;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gitee.fastmybatis.core.query.Query;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +25,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +51,16 @@ public class LoginController {
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    private Oauth2FeignClient oauth2FeignClient;
+    private SmsService smsService;
+
+    @Autowired
+    private AuthorMemberLoginFeign authorMemberLoginFeign;
+
+    @Autowired
+    private UserInfoService userInfoService;
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
 
     @ApiOperation("获取验证码")
     @GetMapping("/verify_code/get")
@@ -76,7 +93,7 @@ public class LoginController {
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public BaseResponse<Object> login(@NotBlank String email, @NotBlank String password) {
-        ResponseEntity<JwtToken> jwtTokenResponseEntity = oauth2FeignClient.login(PASSWORD_GRANT_TYPE, USER_LOGIN_TYPE, email, password, BASIC_TOKEN);
+        ResponseEntity<JwtToken> jwtTokenResponseEntity = authorMemberLoginFeign.login(PASSWORD_GRANT_TYPE, USER_LOGIN_TYPE, email, password, BASIC_TOKEN);
         if (jwtTokenResponseEntity.getStatusCode() != HttpStatus.OK) {
             return BaseResponse.fail(ResponseCodes.FAIL, "账号或密码错误");
         }
@@ -95,5 +112,53 @@ public class LoginController {
         }
         stringRedisTemplate.opsForValue().set(accessToken, "", jwtToken.getExpiresIn(), TimeUnit.SECONDS);
         return BaseResponse.success(new LoginResult(accessToken, authorityList));
+    }
+
+    /**
+     * 填写手机号
+     * 验证人际 发送验证码
+     * 校验人际 验证验证码
+     * @param registerParam
+     * @return
+     */
+    @ApiOperation("会员通过手机号注册")
+    @PostMapping("/register/phone")
+    public BaseResponse<Object> registerByPhone(@RequestBody RegisterParam registerParam) {
+        String phone = registerParam.getAccount();
+        if (BooleanUtils.isFalse(smsService.checkCode(phone, registerParam.getCode()))) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
+        }
+        // 此前是否注册
+        Long phoneId = userInfoService.getColumnValue("id", new Query().eq("phone", phone), Long.class);
+        if (!ObjectUtils.isEmpty(phoneId)) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "该手机号已经绑定账号");
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setPhone(phone);
+        userInfo.setPassword(bCryptPasswordEncoder.encode(registerParam.getPassword()));
+        if (BooleanUtils.isTrue(userInfoService.saveUser(userInfo))) {
+            return BaseResponse.success("注册成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "注册失败");
+    }
+
+    @ApiOperation("会员通过邮箱注册")
+    @PostMapping("/register/email")
+    public BaseResponse<Object> registerByEmail(@RequestBody RegisterParam registerParam) {
+        String email = registerParam.getAccount();
+        if (BooleanUtils.isFalse(smsService.checkEmail(email, registerParam.getCode()))) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
+        }
+        Long emailId = userInfoService.getColumnValue("id", new Query().eq("email", email), Long.class);
+        if (!ObjectUtils.isEmpty(emailId)) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "该手机号已经绑定账号");
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setEmail(email);
+        userInfo.setPassword(bCryptPasswordEncoder.encode(registerParam.getPassword()));
+        if (BooleanUtils.isTrue(userInfoService.saveUser(userInfo))) {
+            return BaseResponse.success("注册成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "注册失败");
     }
 }

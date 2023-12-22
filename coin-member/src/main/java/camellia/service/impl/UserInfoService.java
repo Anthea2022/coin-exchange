@@ -38,22 +38,11 @@ public class UserInfoService extends BaseService<UserInfo, Long, UserInfoMapper>
         return userInfoMapper.getBySpecifiedColumns(list, new Query().eq("id", uid));
     }
 
-    public Boolean updatePayPsw(String newPayPsw, String code) {
-        if (BooleanUtils.isTrue(isSame(code))) {
-            UserInfo userInfo = new UserInfo();
-            userInfo.setId(TokenUtil.getUid());
-            userInfo.setPaypassword(newPayPsw);
-            return userInfoMapper.updateIgnoreNull(userInfo) > 0;
-        }
-        throw new BusinessException(ResponseCodes.FAIL, "原始密码错误");
-    }
-
-    private Boolean isSame(String code) {
-        String phone = userInfoMapper.getColumnValue("phone", new Query().eq("id", TokenUtil.getUid()), String.class);
-        if (!stringRedisTemplate.hasKey(UPDATE_PSW_CODE + phone)) {
-            return false;
-        }
-        return code.equals(stringRedisTemplate.opsForValue().get(UPDATE_PSW_CODE + phone));
+    public Boolean updatePayPsw(String newPayPsw) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(TokenUtil.getUid());
+        userInfo.setPaypassword(newPayPsw);
+        return userInfoMapper.updateIgnoreNull(userInfo) > 0;
     }
 
     public Boolean updatePsw(UserInfo userInfo) {
@@ -65,5 +54,9 @@ public class UserInfoService extends BaseService<UserInfo, Long, UserInfoMapper>
         Long uid = TokenUtil.getUid();
         String password = userInfoMapper.getColumnValue("password", new Query().eq("id", uid), String.class);
         return bCryptPasswordEncoder.matches(oldPsw, password);
+    }
+
+    public Boolean saveUser(UserInfo userInfo) {
+        return userInfoMapper.saveIgnoreNull(userInfo) > 0;
     }
 }

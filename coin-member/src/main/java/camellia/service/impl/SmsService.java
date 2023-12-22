@@ -1,25 +1,31 @@
 package camellia.service.impl;
 
+import camellia.common.BaseResponse;
+import camellia.common.ResponseCodes;
+import camellia.exception.BusinessException;
 import camellia.mapper.UserInfoMapper;
 import camellia.util.TokenUtil;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.alicloud.sms.ISmsService;
 import com.aliyuncs.dysmsapi.model.v20170525.SendBatchSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.gitee.fastmybatis.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static camellia.constant.CodeTypeConstant.OLD_PHONE_CODE;
-import static camellia.constant.CodeTypeConstant.UPDATE_PSW_CODE;
 
 /**
  * @author 墨染盛夏
@@ -32,6 +38,9 @@ public class SmsService {
 
     @Autowired
     private UserInfoMapper userInfoMapper;
+
+    @Autowired
+    private JavaMailSenderImpl javaMailSender;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -69,7 +78,7 @@ public class SmsService {
         return request;
     }
 
-    public Boolean checkCode(String phone, String code) {
+    public Boolean checkPhone(String phone, String code) {
         if (!stringRedisTemplate.hasKey("code" + phone)) {
             return false;
         }
@@ -82,12 +91,12 @@ public class SmsService {
      * @param code
      * @return
      */
-    public Boolean checkOldCode(String code) {
+    public Boolean checkMyPhone(String code) {
         String phone = getMyPhone();
         if (StringUtils.isEmpty(phone)) {
             return false;
         }
-        return checkCode(phone, code);
+        return checkPhone(phone, code);
     }
 
     private String getMyPhone() {
@@ -123,5 +132,44 @@ public class SmsService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void sendEmail(String email) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(emailFrom);
+        simpleMailMessage.setTo(email);
+        String code = RandomUtil.randomNumbers(6);
+        simpleMailMessage.setSubject("数字贸易商城");
+        simpleMailMessage.setText("您正在注册数字货币交易商城，验证码为：" + code);
+        try {
+            javaMailSender.send(simpleMailMessage);
+            stringRedisTemplate.opsForValue().set("email code" + email, code, 5, TimeUnit.MINUTES);
+        } catch (MailException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public Boolean checkEmail(String email, String code) {
+        if (!stringRedisTemplate.hasKey("email code" + email)) {
+            throw new BusinessException(ResponseCodes.FAIL, "未发送验证码或验证码已过期");
+        }
+        String codeInRedis = stringRedisTemplate.opsForValue().get("email code" + email);
+        if (code.equals(codeInRedis)) {
+            return true;
+        }
+        return false;
+    }
+
+    private String getMyEmail() {
+        Long uid = TokenUtil.getUid();
+        return userInfoMapper.getColumnValue("email", new Query().eq("id", uid), String.class);
+    }
+
+    public void sendMyEmail() {
+        sendEmail(getMyEmail());
+    }
+
+    public Boolean checkMyEmail(String code) {
+        return checkEmail(getMyEmail(), code);
     }
 }

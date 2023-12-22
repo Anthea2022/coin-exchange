@@ -107,10 +107,10 @@ public class MemberController {
     @ApiOperation("修改电话号码")
     @PostMapping("/phone/update")
     public BaseResponse<Object> updatePhone(String oldCode, String phone, String code) {
-        if (BooleanUtils.isFalse(smsService.checkOldCode(oldCode))) {
+        if (BooleanUtils.isFalse(smsService.checkMyPhone(oldCode))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "原始电话号码验证码错误");
         }
-        if (BooleanUtils.isTrue(smsService.checkCode(phone, code))) {
+        if (BooleanUtils.isTrue(smsService.checkPhone(phone, code))) {
             UserInfo userInfo = new UserInfo();
             userInfo.setId(TokenUtil.getUid());
             userInfo.setPhone(phone);
@@ -136,10 +136,26 @@ public class MemberController {
         return BaseResponse.fail(ResponseCodes.FAIL, "修改密码失败");
     }
 
-    @ApiOperation("通过电话验证码修改登录密码")
-    @PostMapping("/password/update_by_phone")
+    @ApiOperation("通过手机号修改登录密码")
+    @PostMapping("/password/update/phone")
     public BaseResponse<Object> updatePswByPhone(@NotBlank String newPsw, @NotBlank String code) {
-        if (BooleanUtils.isFalse(smsService.checkOldCode(code))) {
+        if (BooleanUtils.isFalse(smsService.checkMyPhone(code))) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
+        }
+        Long uid = TokenUtil.getUid();
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(uid);
+        userInfo.setPassword(new BCryptPasswordEncoder().encode(newPsw));
+        if (BooleanUtils.isTrue(userInfoService.updatePsw(userInfo))) {
+            return BaseResponse.success("修改密码成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "修改密码失败");
+    }
+
+    @ApiOperation("通过邮箱修改登录密码")
+    @PostMapping("/password/update/email")
+    public BaseResponse<Object> updatePswByEmail(@NotBlank String newPsw, @NotBlank String code) {
+        if (BooleanUtils.isFalse(smsService.checkMyEmail(code))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
         Long uid = TokenUtil.getUid();
@@ -154,11 +170,14 @@ public class MemberController {
 
     @ApiOperation("修改支付密码")
     @PostMapping("/pay_password/set")
-    public BaseResponse<Object> setPayPsw(@NotBlank String newPayPsw, @NotBlank String verifyCode){
-        if (BooleanUtils.isTrue(userInfoService.updatePayPsw(newPayPsw, verifyCode))) {
-            return BaseResponse.success("修改成功");
+    public BaseResponse<Object> setPayPsw(@NotBlank String newPayPsw, @NotBlank String code){
+        if (BooleanUtils.isFalse(smsService.checkMyPhone(code))) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
-        return BaseResponse.fail(ResponseCodes.FAIL, "修改失败");
+        if (BooleanUtils.isTrue(userInfoService.updatePayPsw(newPayPsw))) {
+            return BaseResponse.success("修改支付密码成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "修改支付密码失败");
     }
 
     @ApiOperation("身份认证")

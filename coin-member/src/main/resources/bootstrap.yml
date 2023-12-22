@@ -1,6 +1,24 @@
 spring:
   application:
     name: member-server
+  mail:
+    host: smtp.qiye.aliyun.com
+    password:
+    username:
+    port:
+    default-encoding: UTF-8
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enable: true
+          required: true
+        socketFactory:
+          port: 465
+          class: javax.net.ssl.SSLFactory
+          fallback: false
   cloud:
     nacos:
       discovery:
@@ -19,5 +37,6 @@ spring:
         up-queue-name:
   profiles:
     active: dev
+email_from: striveandyou@163.com
 file:
   path: D://bailan//
