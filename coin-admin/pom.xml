@@ -12,7 +12,6 @@
     <artifactId>coin-admin</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>admin-api</module>
         <module>admin-server</module>
     </modules>
 

@@ -11,9 +11,6 @@
 
     <artifactId>coin-statistics</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>statistics-service</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

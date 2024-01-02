@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -52,9 +53,5 @@ public class UserAuthInfoService extends BaseService<UserAuthInfo, Long, UserAut
             throw new BusinessException(ResponseCodes.QUERY_NULL_ERROR, "请先进行高级认证");
         }
         return authCode;
-    }
-
-    public List<SeniorAuthImgVo>  getLatestSeniorAuthImg(Long uid) {
-        return userAuthInfoMapper.listBySpecifiedColumns()
     }
 }

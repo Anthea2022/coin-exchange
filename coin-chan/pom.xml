@@ -11,10 +11,6 @@
 
     <artifactId>coin-chan</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>chan-api</module>
-        <module>chan-server</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

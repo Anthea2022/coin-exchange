@@ -7,7 +7,7 @@ import camellia.domain.LoginResult;
 import camellia.domain.UserInfo;
 import camellia.domain.param.RegisterParam;
 import camellia.service.AuthorMemberLoginFeign;
-import camellia.service.impl.SmsService;
+import camellia.service.impl.SmsgService;
 import camellia.service.impl.UserInfoService;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
@@ -20,7 +20,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +50,7 @@ public class LoginController {
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    private SmsService smsService;
+    private SmsgService smsgService;
 
     @Autowired
     private AuthorMemberLoginFeign authorMemberLoginFeign;
@@ -125,7 +124,7 @@ public class LoginController {
     @PostMapping("/register/phone")
     public BaseResponse<Object> registerByPhone(@RequestBody RegisterParam registerParam) {
         String phone = registerParam.getAccount();
-        if (BooleanUtils.isFalse(smsService.checkCode(phone, registerParam.getCode()))) {
+        if (BooleanUtils.isFalse(smsgService.checkPhone(phone, registerParam.getCode()))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
         // 此前是否注册
@@ -146,7 +145,7 @@ public class LoginController {
     @PostMapping("/register/email")
     public BaseResponse<Object> registerByEmail(@RequestBody RegisterParam registerParam) {
         String email = registerParam.getAccount();
-        if (BooleanUtils.isFalse(smsService.checkEmail(email, registerParam.getCode()))) {
+        if (BooleanUtils.isFalse(smsgService.checkEmail(email, registerParam.getCode()))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
         Long emailId = userInfoService.getColumnValue("id", new Query().eq("email", email), Long.class);

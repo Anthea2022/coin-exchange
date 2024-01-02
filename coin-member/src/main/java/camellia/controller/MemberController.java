@@ -5,11 +5,10 @@ import camellia.common.ResponseCodes;
 import camellia.config.IdentifyAuthConfiguration;
 import camellia.domain.SeniorAuth;
 import camellia.domain.UserAuthAuditRecord;
-import camellia.domain.UserAuthInfo;
 import camellia.domain.UserInfo;
 import camellia.domain.vo.SeniorAuthImgVo;
 import camellia.domain.vo.UserAuthInfoVo;
-import camellia.service.impl.SmsService;
+import camellia.service.impl.SmsgService;
 import camellia.service.impl.UserAuthAuditRecordService;
 import camellia.service.impl.UserAuthInfoService;
 import camellia.service.impl.UserInfoService;
@@ -58,7 +57,7 @@ public class MemberController {
     private Snowflake snowflake;
 
     @Autowired
-    private SmsService smsService;
+    private SmsgService smsgService;
 
     // 用户模块
 
@@ -72,7 +71,7 @@ public class MemberController {
     @ApiOperation("获取自己基本信息")
     @GetMapping("/info/get")
     public BaseResponse<Object> getBasicInfo() {
-        return BaseResponse.success(userInfoService.getInfo(Arrays.asList("id","username", "email", "phone")));
+        return BaseResponse.success(userInfoService.getInfo(Arrays.asList("id","username", "email", "phone", "realname")));
     }
 
     @ApiOperation("获取自己身份认证信息")
@@ -107,10 +106,10 @@ public class MemberController {
     @ApiOperation("修改电话号码")
     @PostMapping("/phone/update")
     public BaseResponse<Object> updatePhone(String oldCode, String phone, String code) {
-        if (BooleanUtils.isFalse(smsService.checkMyPhone(oldCode))) {
+        if (BooleanUtils.isFalse(smsgService.checkMyPhone(oldCode))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "原始电话号码验证码错误");
         }
-        if (BooleanUtils.isTrue(smsService.checkPhone(phone, code))) {
+        if (BooleanUtils.isTrue(smsgService.checkPhone(phone, code))) {
             UserInfo userInfo = new UserInfo();
             userInfo.setId(TokenUtil.getUid());
             userInfo.setPhone(phone);
@@ -139,7 +138,7 @@ public class MemberController {
     @ApiOperation("通过手机号修改登录密码")
     @PostMapping("/password/update/phone")
     public BaseResponse<Object> updatePswByPhone(@NotBlank String newPsw, @NotBlank String code) {
-        if (BooleanUtils.isFalse(smsService.checkMyPhone(code))) {
+        if (BooleanUtils.isFalse(smsgService.checkMyPhone(code))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
         Long uid = TokenUtil.getUid();
@@ -155,7 +154,7 @@ public class MemberController {
     @ApiOperation("通过邮箱修改登录密码")
     @PostMapping("/password/update/email")
     public BaseResponse<Object> updatePswByEmail(@NotBlank String newPsw, @NotBlank String code) {
-        if (BooleanUtils.isFalse(smsService.checkMyEmail(code))) {
+        if (BooleanUtils.isFalse(smsgService.checkMyEmail(code))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
         Long uid = TokenUtil.getUid();
@@ -171,7 +170,7 @@ public class MemberController {
     @ApiOperation("修改支付密码")
     @PostMapping("/pay_password/set")
     public BaseResponse<Object> setPayPsw(@NotBlank String newPayPsw, @NotBlank String code){
-        if (BooleanUtils.isFalse(smsService.checkMyPhone(code))) {
+        if (BooleanUtils.isFalse(smsgService.checkMyPhone(code))) {
             return BaseResponse.fail(ResponseCodes.FAIL, "验证码错误");
         }
         if (BooleanUtils.isTrue(userInfoService.updatePayPsw(newPayPsw))) {
@@ -212,6 +211,12 @@ public class MemberController {
         return BaseResponse.fail(ResponseCodes.FAIL, "认证失败");
     }
 
+    //远程调用
+    @GetMapping("/getByRealName")
+    public BaseResponse<Object> getUidByRealName(@NotBlank String realName) {
+        return BaseResponse.success(userInfoService.getColumnValue("id", new Query().eq("real_name", realName), Long.class));
+    }
+
     // 用户和管理员公共模块
     @ApiOperation("查看用户的邀请列表")
     @GetMapping("/invite/list")
@@ -246,7 +251,7 @@ public class MemberController {
         if (ObjectUtils.isEmpty(userInfo)) {
             return BaseResponse.fail(ResponseCodes.FAIL, "不存在该用户");
         }
-        seniorAuthImgVos = userAuthInfoService.getLatestSeniorAuthImg(uid);
+        seniorAuthImgVos = userAuthInfoService.listBySpecifiedColumns(Arrays.asList("image_url", "serialno"), new Query().eq("user_id", uid), SeniorAuthImgVo.class);
         if (reviewStatus.equals(0)) {
             // 待审核
              userAuthInfoVo = new UserAuthInfoVo(userInfo, seniorAuthImgVos, userAuthAuditRecord);

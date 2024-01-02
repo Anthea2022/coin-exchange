@@ -1,0 +1,14 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: finance-server
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+      discovery:
+        server-addr: localhost:8848
+  profiles:
+    active: dev

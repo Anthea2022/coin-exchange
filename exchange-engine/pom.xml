@@ -11,10 +11,6 @@
 
     <artifactId>exchange-engine</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>exchange-api</module>
-        <module>exchange-service</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
