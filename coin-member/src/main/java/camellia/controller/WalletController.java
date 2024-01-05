@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -69,8 +70,8 @@ public class WalletController {
 
     @ApiOperation("删除地址")
     @PostMapping("/delete")
-    public BaseResponse<Object> deleteWallet(Long id) {
-        if (BooleanUtils.isTrue(walletService.deleteWallet(id))) {
+    public BaseResponse<Object> deleteWallet(@NotNull Long id, @NotBlank String payPsw) {
+        if (BooleanUtils.isTrue(walletService.deleteWallet(id, payPsw))) {
             return BaseResponse.success("删除成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "删除失败");

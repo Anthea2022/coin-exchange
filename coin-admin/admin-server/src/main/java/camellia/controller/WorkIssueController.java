@@ -4,6 +4,7 @@ import camellia.common.BaseResponse;
 import camellia.common.ResponseCodes;
 import camellia.domain.WorkIssue;
 import camellia.service.WorkIssueService;
+import camellia.util.TokenUtil;
 import com.gitee.fastmybatis.core.query.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,7 +32,7 @@ public class WorkIssueController {
     @ApiOperation("获取工单")
     @GetMapping("/list")
     public BaseResponse<Object> listPage(@NotNull Integer pageNum, @NotNull Integer pageSize,
-                                         String question, Date startTime, Date endTime) {
+                                         Date startTime, Date endTime) {
         Query query = new Query();
         query.page(pageNum, pageSize);
         query.ge(!ObjectUtils.isEmpty(startTime), "last_update_time", startTime);
@@ -56,5 +57,15 @@ public class WorkIssueController {
             return BaseResponse.success("发布成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "发布失败");
+    }
+
+    @ApiOperation("查看自己的回复")
+    @GetMapping("/user/list")
+    public BaseResponse<Object> listUser(@NotNull Integer pageNum, @NotNull Integer pageSize, Byte status) {
+        Query query = new Query();
+        query.page(pageNum, pageSize);
+        query.eq("user_id", TokenUtil.getUid());
+        query.eq(!ObjectUtils.isEmpty(status), "status", status);
+        return BaseResponse.success(workIssueService.page(query));
     }
 }

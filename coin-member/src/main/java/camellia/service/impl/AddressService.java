@@ -19,4 +19,9 @@ public class AddressService extends BaseService<Address, Long, AddressMapper> {
         // 如果存在重复地址
         return addressMapper.saveIgnoreNull(address) > 0;
     }
+
+    public Boolean deleteAddress(Long id) {
+        // TODO: 2024/1/4 是否有使用这个地址
+        return addressMapper.deleteById(id) > 0;
+    }
 }

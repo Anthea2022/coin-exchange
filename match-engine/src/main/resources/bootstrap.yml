@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: match-engine
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:5672
+        binders:
+          order_in: {consumer.orderly: true}
+      bindings:
+        order_in: {destination: order_in, content-type: application/plain, group: order-group, consumer.maxAttempts: 1}
+        completed_order_out: { destination: completed_order_out, content-type: application/plain }
+        exchange_order_out: { destination: exchange_order_out, content-type: application/plain }
+        cancel_order_out: { destination: cancel_order_out, content-type: application/plain }
+  profiles:
+    active: dev

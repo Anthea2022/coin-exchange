@@ -1,15 +1,22 @@
 package camellia.controller;
 
 import camellia.common.BaseResponse;
+import camellia.common.ResponseCodes;
+import camellia.domain.Account;
 import camellia.service.AccountService;
 import camellia.util.TokenUtil;
 import com.gitee.fastmybatis.core.query.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 /**
  * @author 墨染盛夏
@@ -31,4 +38,14 @@ public class AccountController {
 
     // TODO: 2023/12/29 总资产
 
+    // 交易市场调用
+    @ApiOperation("扣钱")
+    @PostMapping("/deduct")
+    public BaseResponse<Object> deduct(@NotNull Long coinId, Long orderId, @NotNull BigDecimal num, @NotNull BigDecimal fee,
+                                       String remark, String businessType, @NotNull Byte direction) {
+        if (BooleanUtils.isTrue(accountService.decrease(TokenUtil.getUid(), coinId, orderId, num, fee, remark, businessType, direction))) {
+            return BaseResponse.success("扣款成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "扣款失败");
+    }
 }

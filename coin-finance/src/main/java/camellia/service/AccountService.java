@@ -32,7 +32,18 @@ public class AccountService extends BaseService<Account, Long, AccountMapper> {
     @Autowired
     private MemberServiceFeign memberServiceFeign;
 
-    public Boolean increase(Long userId, Long coinId, Long orderId, BigDecimal num, BigDecimal fee, String remark, String businessType, Byte direction) {
+    /**
+     * @param userId
+     * @param coinId
+     * @param orderId
+     * @param num 扣多少钱, 不包含税
+     * @param fee
+     * @param remark
+     * @param businessType
+     * @param direction
+     * @return
+     */
+    public Boolean decrease(Long userId, Long coinId, Long orderId, BigDecimal num, BigDecimal fee, String remark, String businessType, Byte direction) {
         Long accountId = accountMapper.getColumnValue("id", new Query().eq("user_id", userId).eq("coin_id", coinId), Long.class);
         if (ObjectUtil.isEmpty(accountId)) {
             throw new BusinessException(ResponseCodes.QUERY_NULL_ERROR, "无此账户");
@@ -44,15 +55,15 @@ public class AccountService extends BaseService<Account, Long, AccountMapper> {
         }
         Account account = accountMapper.getById(accountId);
         BigDecimal balanceAmount = account.getBalanceAmount();
-        BigDecimal result = balanceAmount.add(num);
+        BigDecimal result = balanceAmount.subtract(num).subtract(fee);
         if (result.compareTo(BigDecimal.ONE) > 0) {
             account.setBalanceAmount(result);
-             return accountMapper.updateIgnoreNull(account) > 0;
+            return accountMapper.updateIgnoreNull(account) > 0;
         }
         throw new BusinessException(ResponseCodes.FAIL, "余额不足");
     }
 
-    public Boolean decrease(Long userId, Long coinId, Long orderId, BigDecimal num, BigDecimal fee, String remark, String businessType, Byte direction) {
+    public Boolean increase(Long userId, Long coinId, Long orderId, BigDecimal num, BigDecimal fee, String remark, String businessType, Byte direction) {
         Long accountId = accountMapper.getColumnValue("id", new Query().eq("user_id", userId).eq("coin_id", coinId), Long.class);
         if (ObjectUtil.isEmpty(accountId)) {
             throw new BusinessException(ResponseCodes.QUERY_NULL_ERROR, "无此账户");
@@ -65,5 +76,7 @@ public class AccountService extends BaseService<Account, Long, AccountMapper> {
         Account account = accountMapper.getById(accountId);
         BigDecimal balanceAmount = account.getBalanceAmount();
         BigDecimal result = balanceAmount.add(num);
+        account.setBalanceAmount(result);
+        return accountMapper.updateIgnoreNull(account) > 0;
     }
 }

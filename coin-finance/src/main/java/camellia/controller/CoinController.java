@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -70,5 +71,11 @@ public class CoinController {
             return BaseResponse.success("设置成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "设置失败");
+    }
+
+    @ApiOperation("通过id获取")
+    @GetMapping("/getById")
+    public BaseResponse<Object> getById(@NotNull Long cid) {
+        return BaseResponse.success(coinService.getBySpecifiedColumns(Arrays.asList("coin_name", "id"), new Query().eq("id", cid)));
     }
 }

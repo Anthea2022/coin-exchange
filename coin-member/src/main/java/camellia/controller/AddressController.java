@@ -13,6 +13,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author 墨染盛夏
  * @version 2023/12/8 0:24
@@ -23,9 +25,9 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
-    @GetMapping("/listAll")
+    @GetMapping("/list")
     @ApiOperation("获取所有地址")
-    public BaseResponse<Object> listAll(Long cid) {
+    public BaseResponse<Object> list(Long cid) {
         Long uid = TokenUtil.getUid();
         Query query = new Query();
         query.eq("user_id", uid);
@@ -34,11 +36,20 @@ public class AddressController {
     }
 
 
+
     @PostMapping("/save")
     public BaseResponse<Object> addAddress(@RequestBody Address address) {
         if (BooleanUtils.isFalse(addressService.addAddress(address))) {
             return BaseResponse.success("添加成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "添加失败");
+    }
+
+    @PostMapping("/delete")
+    public BaseResponse<Object> deleteAddress(@NotNull Long id) {
+        if (BooleanUtils.isFalse(addressService.deleteAddress(id))) {
+            return BaseResponse.success("删除成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "删除失败");
     }
 }
