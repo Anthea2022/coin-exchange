@@ -5,11 +5,14 @@ import camellia.common.ResponseCodes;
 import camellia.domain.entity.FavoriteMarket;
 import camellia.domain.entity.Market;
 import camellia.domain.param.MarketParam;
+import camellia.domain.vo.DepthItemVo;
 import camellia.domain.vo.DepthsVo;
+import camellia.feign.MatchFeignClient;
 import camellia.service.FavoriteMarketService;
 import camellia.service.MarketService;
 import camellia.util.ImgUtil;
 import camellia.util.TokenUtil;
+import cn.hutool.http.HttpStatus;
 import com.gitee.fastmybatis.core.query.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +27,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 墨染盛夏
@@ -38,6 +42,9 @@ public class MarketController {
 
     @Autowired
     private FavoriteMarketService favoriteMarketService;
+
+    @Autowired
+    private MatchFeignClient matchFeignClient;
 
     @ApiOperation("列举分页")
     @GetMapping("/listPage")
@@ -134,8 +141,13 @@ public class MarketController {
     public BaseResponse<Object> getDepthData(@NotBlank String symbol, @NotBlank String depth) {
         Market market = marketService.getByQuery(new Query().eq("symbol", symbol));
         DepthsVo depthsVo = new DepthsVo();
-        depthsVo.setAsks(new ArrayList<>());
-        depthsVo.setBids(new ArrayList<>());
+        BaseResponse<Object> matchFeignClientPlateData = matchFeignClient.getPlateData(symbol);
+        if (matchFeignClientPlateData.getCode() != HttpStatus.HTTP_OK) {
+            return BaseResponse.fail(ResponseCodes.FAIL, "撮合引擎调用失败");
+        }
+        Map<String, List<DepthItemVo>> plateMap = (Map<String, List<DepthItemVo>>) matchFeignClientPlateData.getData();
+        depthsVo.setAsks(plateMap.get("asks"));
+        depthsVo.setBids(plateMap.get("bids"));
         depthsVo.setPrice(market.getOpenPrice());
         depthsVo.setCnyPrice(market.getOpenPrice());
         return BaseResponse.success(depthsVo);

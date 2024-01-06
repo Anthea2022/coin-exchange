@@ -8,5 +8,13 @@ spring:
       config:
         server-addr: localhost:8848
         file-extension: yaml
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:5672
+        binders:
+          order_out: {consumer.orderly: true}
+      bindings:
+        order_out: {destination: order_in, content-type: application/plain}
   profiles:
     active: dev

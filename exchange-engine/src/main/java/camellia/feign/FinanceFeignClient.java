@@ -16,4 +16,8 @@ public interface FinanceFeignClient {
     @PostMapping("/finance/account/deduct")
     BaseResponse<Object> deduct(@NotNull Long coinId, Long orderId, @NotNull BigDecimal num, @NotNull BigDecimal fee,
                                 String remark, String businessType, @NotNull Byte direction);
+
+    @PostMapping("/finance/account/income")
+    public BaseResponse<Object> income(@NotNull Long coinId, Long orderId, @NotNull BigDecimal num, @NotNull BigDecimal fee,
+                                       String remark, String businessType, @NotNull Byte direction);
 }

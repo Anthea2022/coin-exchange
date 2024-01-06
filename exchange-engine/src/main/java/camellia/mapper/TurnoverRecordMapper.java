@@ -1,13 +1,13 @@
 package camellia.mapper;
 
-import camellia.domain.model.EntrustOrder;
+import camellia.domain.entity.TurnoverRecord;
 import com.gitee.fastmybatis.core.mapper.CrudMapper;
 import org.springframework.stereotype.Repository;
 
 /**
  * @author 墨染盛夏
- * @version 2024/1/3 21:16
+ * @version 2024/1/6 0:13
  */
 @Repository
-public interface EntrustOrderMapper extends CrudMapper<EntrustOrder, Long> {
+public interface TurnoverRecordMapper extends CrudMapper<TurnoverRecord, Long> {
 }

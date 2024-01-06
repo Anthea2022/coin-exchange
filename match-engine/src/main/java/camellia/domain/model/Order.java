@@ -68,5 +68,7 @@ public class Order {
      */
     private Date cancelTime;
 
+    private boolean completed;
+
     private List<OrderDetail> details;
 }

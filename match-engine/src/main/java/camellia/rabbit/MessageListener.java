@@ -4,7 +4,6 @@ import camellia.disruptor.DisruptorTemplate;
 import camellia.domain.model.EntrustOrder;
 import camellia.domain.model.Order;
 import camellia.util.BeanUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Service;

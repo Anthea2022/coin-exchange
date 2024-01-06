@@ -38,7 +38,7 @@ public class AccountController {
 
     // TODO: 2023/12/29 总资产
 
-    // 交易市场调用
+    // 交易市场调用 充值币
     @ApiOperation("扣钱")
     @PostMapping("/deduct")
     public BaseResponse<Object> deduct(@NotNull Long coinId, Long orderId, @NotNull BigDecimal num, @NotNull BigDecimal fee,
@@ -47,5 +47,16 @@ public class AccountController {
             return BaseResponse.success("扣款成功");
         }
         return BaseResponse.fail(ResponseCodes.FAIL, "扣款失败");
+    }
+
+    // 兑换币
+    @ApiOperation("入账")
+    @PostMapping("/income")
+    public BaseResponse<Object> income(@NotNull Long coinId, Long orderId, @NotNull BigDecimal num, @NotNull BigDecimal fee,
+                                       String remark, String businessType, @NotNull Byte direction) {
+        if (BooleanUtils.isTrue(accountService.increase(TokenUtil.getUid(), coinId, orderId, num, fee, remark, businessType, direction))) {
+            return BaseResponse.success("进账成功");
+        }
+        return BaseResponse.fail(ResponseCodes.FAIL, "进账失败");
     }
 }

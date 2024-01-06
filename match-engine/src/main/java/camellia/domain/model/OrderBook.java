@@ -3,6 +3,7 @@ package camellia.domain.model;
 import camellia.common.ResponseCodes;
 import camellia.enums.OrderDirection;
 import camellia.exception.BusinessException;
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import java.util.TreeMap;
  * @author 墨染盛夏
  * @version 2024/1/5 13:06
  */
+@Data
 public class OrderBook {
     private TreeMap<BigDecimal, MergeOrder> buyOrder;
 

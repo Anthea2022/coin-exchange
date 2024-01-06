@@ -37,9 +37,11 @@ public class TradePlate {
         }
         int i = 0;
         for (;i<items.size();i++) {
+            // sell从小到大
+            // buy从大到小
             DepthItemVo depthItemVo = items.get(i);
             if ((orderDirection == OrderDirection.BUY && order.getPrice().compareTo(depthItemVo.getPrice()) == -1) ||
-                    (orderDirection == OrderDirection.SELL && order.getPrice().compareTo(depthItemVo.getPrice()) == -1)) {
+                    (orderDirection == OrderDirection.SELL && order.getPrice().compareTo(depthItemVo.getPrice()) == 1)) {
                 continue;
             } else if (depthItemVo.getPrice().compareTo(order.getPrice()) == 0) {
                 depthItemVo.setVolume(depthItemVo.getVolume().add(order.getAmount().subtract(order.getTradeAmount())));

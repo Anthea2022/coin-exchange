@@ -28,4 +28,10 @@ public interface Source {
      */
     @Output("cancel_order_out")
     MessageChannel cancelOrderOut();
+
+    /**
+     * 盘口数据输出
+     */
+    @Output("plate_order_out")
+    MessageChannel plateOrderOut();
 }

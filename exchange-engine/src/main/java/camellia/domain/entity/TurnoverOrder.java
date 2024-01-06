@@ -21,7 +21,6 @@ import java.util.Date;
 @Table(name = "turnover_order")
 @Accessors(chain = true)
 public class TurnoverOrder {
-    @ApiModelProperty(value="")
     private Long id;
 
     /**

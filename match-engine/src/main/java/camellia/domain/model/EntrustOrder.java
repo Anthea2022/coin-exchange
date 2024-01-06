@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
-* 委托订单信息
-*/
+ * 委托订单信息
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -173,7 +173,7 @@ public class EntrustOrder {
 
     /**
      * 买卖类型：1-买入；2-卖出
-2 卖出
+     2 卖出
 
      */
     @Column(name = "type")
@@ -189,10 +189,10 @@ public class EntrustOrder {
 
     /**
      * status
-0未成交
-1已成交
-2已取消
-4异常单
+     0未成交
+     1已成交
+     2已取消
+     4异常单
      */
     @Column(name = "status")
     @ApiModelProperty(value="status,0未成交,1已成交,2已取消,4异常单")
