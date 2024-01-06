@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: chan-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+  profiles:
+    active: dev
+#    tio的配置
+tio:
+  websocket:
+    server:
+      port: 8987
+      heartbeat-timeout: 600000
+    cluster:
+      enabled: true
+      redis:
+        ip: localhost
+        port: 6379
