@@ -2,6 +2,12 @@ spring:
   application:
     name: chan-server
   cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:5672
+      bindings:
+        tio_group: { destination: tio_group, content-type: application/plain, group: order-group, consumer.maxAttempts: 1 }
     nacos:
       discovery:
         server-addr: localhost:8848

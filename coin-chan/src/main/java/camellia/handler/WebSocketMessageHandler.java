@@ -1,7 +1,13 @@
 package camellia.handler;
 
+import camellia.domain.vo.ResponseEntity;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.jwt.Jwt;
+import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.http.common.HttpRequest;
@@ -9,6 +15,8 @@ import org.tio.http.common.HttpResponse;
 import org.tio.websocket.common.WsRequest;
 import org.tio.websocket.common.WsResponse;
 import org.tio.websocket.server.handler.IWsMsgHandler;
+
+import java.util.Objects;
 
 /**
  * @author 墨染盛夏
@@ -68,16 +76,47 @@ public class WebSocketMessageHandler implements IWsMsgHandler {
     /**
      * 前端发送文本时的处理
      * @param wsRequest
-     * @param s
+     * @param text
      * @param channelContext
      * @return
      * @throws Exception
      */
     @Override
-    public Object onText(WsRequest wsRequest, String s, ChannelContext channelContext) throws Exception {
+    public Object onText(WsRequest wsRequest, String text, ChannelContext channelContext) throws Exception {
         log.info("客户端发送文本过来了");
-        // 最常使用订阅模式
-        Tio.bindGroup(channelContext, "test");
-        return WsResponse.fromText("你好呀", "utf-8"); // 发送给别人的数据
+
+        if (Objects.equals("ping", text)) {
+            return "pong";
+        }
+        JSONObject payload = JSON.parseObject(text);
+        String id = payload.getString("id"); //订阅的id
+        String sub = payload.getString("sub"); // 要订阅的组
+        String req = payload.getString("req"); // 当前的request
+        String cancel = payload.getString("cancel"); // 要取消订阅的组
+        String authorization = payload.getString("authorization");
+
+        if (StringUtils.hasText(sub)) {
+            Tio.bindGroup(channelContext, sub);
+        }
+        if (StringUtils.hasText(cancel)) {
+            Tio.unbindGroup(cancel, channelContext);
+        }
+        if (StringUtils.hasText(authorization) && authorization.startsWith("bearer ")) {
+            String token = authorization.replace("bearer ", "");
+            Jwt jwt = JwtHelper.decode(token);
+            String jwtStr = jwt.getClaims();
+            JSONObject jsonObject = JSON.parseObject(jwtStr);
+            String userId = jsonObject.getString("user_name");
+            // 由用户绑定用户
+            Tio.unbindUser(channelContext.getTioConfig(), userId);
+        }
+        ResponseEntity responseEntity = new ResponseEntity();
+        responseEntity.setId(id);
+        responseEntity.setCh(sub);
+        responseEntity.setEvent(req);
+        responseEntity.setSubbed(sub);
+        responseEntity.setStatus("OK");
+        responseEntity.setCanceled(cancel);
+        return responseEntity.build();
     }
 }

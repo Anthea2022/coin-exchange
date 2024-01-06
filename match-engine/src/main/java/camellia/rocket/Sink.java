@@ -1,4 +1,4 @@
-package camellia.rabbit;
+package camellia.rocket;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.messaging.MessageChannel;

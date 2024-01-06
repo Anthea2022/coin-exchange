@@ -1,4 +1,4 @@
-package camellia.rabbit;
+package camellia.rocket;
 
 import camellia.disruptor.DisruptorTemplate;
 import camellia.domain.model.EntrustOrder;

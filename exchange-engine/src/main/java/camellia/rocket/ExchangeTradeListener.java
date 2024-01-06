@@ -1,4 +1,4 @@
-package camellia.rabbit;
+package camellia.rocket;
 
 import camellia.domain.entity.ExchangeTrade;
 import camellia.service.EntrustOrderService;
